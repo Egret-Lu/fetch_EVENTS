@@ -59,11 +59,12 @@ cat_evts.plot(fig=fig)
 fig.savefig(search_dir+"events.pdf", bbox_inches="tight")
 
 file = open('stations.txt', 'w')
-for ista in range(0,len(inventory[0])) :
-    file.write("%5s %12f %12f %12f\n" % (inventory[0].stations[ista]._code, 
-                                        inventory[0].stations[ista]._latitude, 
-                                        inventory[0].stations[ista]._longitude, 
-                                        inventory[0].stations[ista]._elevation))
+for i in range(len(inventory)):
+    for ista in range(0,len(inventory[i])) :
+        file.write("%5s %12f %12f %12f\n" % (inventory[i].stations[ista]._code, 
+                                            inventory[i].stations[ista]._latitude, 
+                                            inventory[i].stations[ista]._longitude, 
+                                            inventory[i].stations[ista]._elevation))
 file.close()
 
 
@@ -101,61 +102,62 @@ for iev, ev in enumerate(cat_evts) :
         continue
         
     # Loop through stations
-    for ista in range(0,len(inventory[0])) :
-        stel = inventory[0].stations[ista].elevation
-        stla = inventory[0].stations[ista].latitude
-        stlo = inventory[0].stations[ista].longitude
-        station = inventory[0].stations[ista].code
-        vals = gps2dist_azimuth(lat1=stla, lon1=stlo, lat2=evla, lon2=evlo)
-        dist = vals[0]
-        baz = vals[1]
-        az = vals[2]
-        gcarc = locations2degrees(lat1=stla, long1=stlo, lat2=evla, long2=evlo)
-    
-        # Loop through components
-        for icomp, comp in enumerate(comps):   
-            try:
-                st = client.get_waveforms(network=network, station=station, location="*", channel=comp, starttime=tbeg, endtime=tend, attach_response=True)
-            except Exception:
-                print('Missing data for station: ',station)
-                continue
-            if len(st) > 1: # Check for data gaps and fill with 0's
-                st.merge(method=1, fill_value=0)
-            sr = st[0].stats.sampling_rate
-            if is_removeresp:
-                # Check whether pressure channel, if so use "VEL" option which doesn't add or remove zeros
-                if st[0].stats.response.instrument_sensitivity.input_units == 'PA':
-                    st.remove_response(output='VEL', zero_mean=True, taper=True, taper_fraction=0.05, pre_filt=[0.001, 0.005, sr/3, sr/2], water_level=600)
-                else:
-                    st.remove_response(output=outunits, zero_mean=True, taper=True, taper_fraction=0.05, pre_filt=[0.001, 0.005, sr/3, sr/2], water_level=600)
-            st.trim(starttime=tbeg, endtime=tend, pad=True, nearest_sample=False, fill_value=0) # make sure correct length
-            st.detrend(type='demean')
-            st.detrend(type='linear')
-            st.taper(type="cosine",max_percentage=0.05)
-#             sr_old = st[0].stats.sampling_rate
-            if is_downsamp==1:
-                st.filter('lowpass', freq=0.4*sr_new, zerophase=True) # anti-alias filter
-                st.resample(sampling_rate=sr_new)
+    for i in range(len(inventory)):
+        for ista in range(0,len(inventory[i])) :
+            stel = inventory[i].stations[ista].elevation
+            stla = inventory[i].stations[ista].latitude
+            stlo = inventory[i].stations[ista].longitude
+            station = inventory[i].stations[ista].code
+            vals = gps2dist_azimuth(lat1=stla, lon1=stlo, lat2=evla, lon2=evlo)
+            dist = vals[0]
+            baz = vals[1]
+            az = vals[2]
+            gcarc = locations2degrees(lat1=stla, long1=stlo, lat2=evla, long2=evlo)
+        
+            # Loop through components
+            for icomp, comp in enumerate(comps):   
+                try:
+                    st = client.get_waveforms(network=network, station=station, location="*", channel=comp, starttime=tbeg, endtime=tend, attach_response=True)
+                except Exception:
+                    print('Missing data for station: ',station)
+                    continue
+                if len(st) > 1: # Check for data gaps and fill with 0's
+                    st.merge(method=1, fill_value=0)
+                sr = st[0].stats.sampling_rate
+                if is_removeresp:
+                    # Check whether pressure channel, if so use "VEL" option which doesn't add or remove zeros
+                    if st[0].stats.response.instrument_sensitivity.input_units == 'PA':
+                        st.remove_response(output='VEL', zero_mean=True, taper=True, taper_fraction=0.05, pre_filt=[0.001, 0.005, sr/3, sr/2], water_level=600)
+                    else:
+                        st.remove_response(output=outunits, zero_mean=True, taper=True, taper_fraction=0.05, pre_filt=[0.001, 0.005, sr/3, sr/2], water_level=600)
+                st.trim(starttime=tbeg, endtime=tend, pad=True, nearest_sample=False, fill_value=0) # make sure correct length
                 st.detrend(type='demean')
                 st.detrend(type='linear')
                 st.taper(type="cosine",max_percentage=0.05)
-    
-            # convert to SAC and fill out station/event header info
-            sac = SACTrace.from_obspy_trace(st[0])
-            sac.stel = stel
-            sac.stla = stla
-            sac.stlo = stlo
-            sac.evdp = evdp
-            sac.evla = evla
-            sac.evlo = evlo
-            sac.mag = mag
-            sac.dist = dist
-            sac.az = az
-            sac.baz = baz
-            sac.gcarc = gcarc
-            
-            sac_out = evdir + evname + '.' + network + '.' + station + '.' + comp + '.sac'
-            sac.write(sac_out)
+    #             sr_old = st[0].stats.sampling_rate
+                if is_downsamp==1:
+                    st.filter('lowpass', freq=0.4*sr_new, zerophase=True) # anti-alias filter
+                    st.resample(sampling_rate=sr_new)
+                    st.detrend(type='demean')
+                    st.detrend(type='linear')
+                    st.taper(type="cosine",max_percentage=0.05)
+        
+                # convert to SAC and fill out station/event header info
+                sac = SACTrace.from_obspy_trace(st[0])
+                sac.stel = stel
+                sac.stla = stla
+                sac.stlo = stlo
+                sac.evdp = evdp
+                sac.evla = evla
+                sac.evlo = evlo
+                sac.mag = mag
+                sac.dist = dist
+                sac.az = az
+                sac.baz = baz
+                sac.gcarc = gcarc
+                
+                sac_out = evdir + evname + '.' + network + '.' + station + '.' + comp + '.sac'
+                sac.write(sac_out)
 f.close()
 # %% codecell
 

@@ -19,7 +19,8 @@ is_downsamp = 1 # Downsample?
 sr_new = 1 # Downsample Hz (samples/sec)
 trlen = 6000 # Length of traces (sec)
 # WARNING! List the full channel names. Do not use wildcards. Bad things will happen...
-comps = ["BHZ", "BH1", "BH2", "BDH"] # Components to download
+#comps = ["BHZ", "BH1", "BH2", "BDH"] # Components to download
+comps = ["BHZ"]
 is_removeresp = 1 # Remove response?
 outunits = 'DISP' # DISP, VEL, ACC [For pressure channels, should use "VEL"]
 isCMT_params = 1 # Use GCMT parameters for SAC header or default IRIS? (time, lat, lon, depth)
