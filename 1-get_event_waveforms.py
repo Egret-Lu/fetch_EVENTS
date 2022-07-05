@@ -53,10 +53,12 @@ else: # Read events from IRIS catalogue
 # %% codecell
 # LOAD STATIONS
 inventory = client.get_stations(network=network, station=stations, channel=comps[0], starttime=t1, endtime=t2)
-inventory.plot(projection="local",label=False)
+##plot stations
+#inventory.plot(projection="local",label=False)
 fig = inventory.plot(show=False) 
-cat_evts.plot(fig=fig)  
-fig.savefig(search_dir+"events.pdf", bbox_inches="tight")
+#plot events and stations
+#cat_evts.plot(fig=fig)  
+#fig.savefig(search_dir+"events.pdf", bbox_inches="tight")
 
 file = open('stations.txt', 'w')
 for i in range(len(inventory)):
