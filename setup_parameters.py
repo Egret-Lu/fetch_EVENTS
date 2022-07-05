@@ -1,9 +1,9 @@
 ########## 1-get_event_waveforms ##########
-minmagnitude = 7.0 #6.5; 7.0; # Lower magnitude cutoff for event search
+minmagnitude = 6.5 #6.5; 7.0; # Lower magnitude cutoff for event search
 webservice = "IRIS"
-network = "YO" # YO ENAM
+network = "_HAWAII" # YO ENAM
 
-input_stalist = 1 # 0 if use all stations
+input_stalist = False# 0 if use all stations
 if input_stalist: # List of stations
     stalist = '/Users/russell/Lamont/ENAM/DATA/stalist_good.txt'
     text_file = open(stalist, "r")
@@ -13,8 +13,8 @@ if input_stalist: # List of stations
 else: # Use all available stations
     stations = "*"
     
-tstart = "2014-04-13T00:00:00"
-tend = "2015-03-29T00:00:00"
+tstart = "2005-01-01T00:00:00"
+tend = "2008-01-01T00:00:00"
 is_downsamp = 1 # Downsample?
 sr_new = 1 # Downsample Hz (samples/sec)
 trlen = 6000 # Length of traces (sec)
