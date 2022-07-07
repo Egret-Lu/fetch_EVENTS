@@ -72,9 +72,9 @@ file.close()
 
 # %% codecell
 # Get event times
-f = open(search_dir+'evlist.txt','w')
+#f=open(search_dir+'evlist.txt','w')
+#use getList.py to get evlist file
 for iev, ev in enumerate(cat_evts) :  
-    
     # determine index of desired origin type
     ior = 0 
     if isCMT_params:
@@ -95,7 +95,9 @@ for iev, ev in enumerate(cat_evts) :
     date = datetime.strptime(str(tbeg),'%Y-%m-%dT%H:%M:%S.%fZ')
     evname = date.strftime('%Y%m%d%H%M')
     evdir = search_dir + evname + '/'
-    f.write(evname+'\n')
+    #print(evname)
+    #f.write(evname+"\n")
+    
     if not os.path.exists(evdir):
         os.makedirs(evdir)
         print('Working on : ',evname)
@@ -121,7 +123,7 @@ for iev, ev in enumerate(cat_evts) :
                 try:
                     st = client.get_waveforms(network=network, station=station, location="*", channel=comp, starttime=tbeg, endtime=tend, attach_response=True)
                 except Exception:
-                    print('Missing data for station: ',station)
+                    #print('Missing data for station: ',station)
                     continue
                 if len(st) > 1: # Check for data gaps and fill with 0's
                     st.merge(method=1, fill_value=0)
@@ -160,7 +162,7 @@ for iev, ev in enumerate(cat_evts) :
                 
                 sac_out = evdir + evname + '.' + network + '.' + station + '.' + comp + '.sac'
                 sac.write(sac_out)
-f.close()
+#f.close()
 # %% codecell
 
 # %% codecell
