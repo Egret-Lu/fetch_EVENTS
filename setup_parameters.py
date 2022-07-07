@@ -4,12 +4,12 @@ webservice = "IRIS"
 network = "_HAWAII" # YO ENAM
 
 input_stalist = False# 0 if use all stations
-if input_stalist: # List of stations
-    stalist = '/Users/russell/Lamont/ENAM/DATA/stalist_good.txt'
-    text_file = open(stalist, "r")
-    stations = text_file.read().split('\n')
-    text_file.close()
-    stations = ','.join(stations).replace(" ", "")
+# if input_stalist: # List of stations
+#     stalist = '/Users/russell/Lamont/ENAM/DATA/stalist_good.txt'
+#     text_file = open(stalist, "r")
+#     stations = text_file.read().split('\n')
+#     text_file.close()
+#     stations = ','.join(stations).replace(" ", "")
 else: # Use all available stations
     stations = "*"
     
