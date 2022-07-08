@@ -54,12 +54,12 @@ else: # Read events from IRIS catalogue
 # LOAD STATIONS
 inventory = client.get_stations(network=network, station=stations, channel=comps[0], starttime=t1, endtime=t2)
 ##plot stations
-#inventory.plot(projection="local",label=False)
+inventory.plot(projection="local",label=False)
 fig = inventory.plot(show=False) 
-#plot events and stations
-#cat_evts.plot(fig=fig)  
-#fig.savefig(search_dir+"events.pdf", bbox_inches="tight")
-
+##plot events and stations
+eve_fig=cat_evts.plot(fig=fig)  
+fig.savefig(search_dir+"stations.jpg", bbox_inches="tight")
+eve_fig.savefig(search_dir+"events.jpg", bbox_inches="tight")
 file = open('stations.txt', 'w')
 for i in range(len(inventory)):
     for ista in range(0,len(inventory[i])) :
